@@ -1,0 +1,16 @@
+apiVersion: imran.dev.io/v1alpha1
+kind: Microservice
+metadata:
+  name: microservice-sample
+spec:
+  label: microservice-sample
+  replicas: 3
+  image: sayedimran/fastapi-sample-app:v4
+  port: 80
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
