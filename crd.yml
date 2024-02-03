@@ -33,9 +33,9 @@ spec:
                 minimum: 1
                 maximum: 65535
               labels:
-                type: array
-                items:
-                  type: object
+                type: object
+                additionalProperties:
+                  type: string
               resources:
                 type: object
                 properties:
