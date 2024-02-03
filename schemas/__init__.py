@@ -17,7 +17,7 @@ class DeployConfig(BaseModel):
     labels: dict[str, Any]
     port: int = 80
     env: dict[str, Any] = {}
-    labels: str 
+    labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
     resources: Resource | dict = Resource().model_dump()
     node_selector: dict[str, str] = {}
@@ -27,7 +27,6 @@ class DeployConfig(BaseModel):
     
 class ServiceConfig(BaseModel):
     """Service configuration."""
-    name: str
     port: int = 80
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
