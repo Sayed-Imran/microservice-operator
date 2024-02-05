@@ -5,7 +5,7 @@ load_dotenv(".env")
 
 class _EnvConfig(BaseSettings):
     """Base configuration."""
-    ENV: Literal["dev", "test", "prod"] = "dev"
+    ENV: Literal["dev", "test", "prod"] = "prod"
 
 EnvConfig = _EnvConfig()
 print(EnvConfig.ENV)

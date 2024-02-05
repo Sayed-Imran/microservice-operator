@@ -2,9 +2,19 @@ import kopf
 import pykube
 from handlers.py_kube_controller import KubernetesController
 from schemas import DeployConfig, ServiceConfig
+from config import EnvConfig
 
 kubernetes_controller = KubernetesController()
 api = kubernetes_controller.get_api()
+
+@kopf.on.login()
+def custom_login_fn(**kwargs):
+    if EnvConfig.ENV == 'dev':
+        return kopf.login_with_kubeconfig(**kwargs)
+    else:
+        return kopf.login_with_service_account(**kwargs)
+
+
 
 @kopf.on.create('imran.dev.io', 'v1alpha1', 'microservices')
 def create_fn(spec, **kwargs):
