@@ -16,7 +16,7 @@ class DeployConfig(BaseModel):
     replicas: int = 1
     labels: dict[str, Any]
     port: int = 80
-    env: dict[str, Any] = {}
+    env: list[dict[str, Any]] = []
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
     resources: Resource | dict = Resource().model_dump()

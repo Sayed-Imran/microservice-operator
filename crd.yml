@@ -36,6 +36,15 @@ spec:
                 type: object
                 additionalProperties:
                   type: string
+              env:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    value:
+                      type: string
               resources:
                 type: object
                 properties:
@@ -55,13 +64,18 @@ spec:
                         type: string
           status:
             type: object
-            x-kubernetes-preserve-unknown-fields: true
+            # x-kubernetes-preserve-unknown-fields: true
             properties:
               ready:
                 type: string
     additionalPrinterColumns:
-    - name: Ready
-      type: string
-      description: The readiness of the microservice
-      jsonPath: .status.ready
+    - name: Replicas
+      type: integer
+      description: The number of replicas
+      jsonPath: .spec.replicas
+      priority: 0
+    - name: Port
+      type: integer
+      description: The port number
+      jsonPath: .spec.port
       priority: 0

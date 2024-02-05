@@ -5,7 +5,7 @@ import yaml
 
 class KubernetesController:
     def __init__(self) -> None:
-        if EnvConfig.ENV == 'dev':
+        if EnvConfig.ENV in ['dev', 'test']:
             self.api = pykube.HTTPClient(pykube.KubeConfig.from_file("config.yml"))
         else:
             self.api = pykube.HTTPClient(pykube.KubeConfig.from_service_account())
@@ -14,7 +14,6 @@ class KubernetesController:
         return self.api
 
     def create_deployment(self, deploy_config: DeployConfig, name: str):
-        deploy_config.env = {key: str(value) for key, value in deploy_config.env.items()}
         deployment = {
             "apiVersion": "apps/v1",
             "kind": "Deployment",
@@ -38,6 +37,7 @@ class KubernetesController:
                                         "containerPort": deploy_config.port
                                     }
                                 ],
+                                "env": deploy_config.env,
                                 "resources": {
                                     "limits": {
                                         "cpu": deploy_config.resources.cpu_limit,

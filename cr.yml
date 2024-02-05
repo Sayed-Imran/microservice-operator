@@ -9,6 +9,11 @@ spec:
   replicas: 3
   image: sayedimran/fastapi-sample-app:v4
   port: 7000
+  env:
+    - name: ENV
+      value: dev
+    - name: LOG_LEVEL
+      value: debug
   resources:
     limits:
       cpu: 100m
