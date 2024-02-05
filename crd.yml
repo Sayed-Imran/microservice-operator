@@ -62,9 +62,12 @@ spec:
                         type: string
                       memory:
                         type: string
+            required:
+            - replicas
+            - image
+            - port
           status:
             type: object
-            # x-kubernetes-preserve-unknown-fields: true
             properties:
               ready:
                 type: string
