@@ -18,8 +18,8 @@ rules:
     resources: [customresourcedefinitions]
     verbs: [list, watch]
 
-  - apiGroups: ["", "apps", "batch", "extensions"]
-    resources: [namespaces, deployments, pods, services, services/proxy, events]
+  - apiGroups: ["", "apps", "batch", "extensions", "networking.istio.io"]
+    resources: [namespaces, deployments, pods, services, services/proxy, events, virtualservices]
     verbs: [list, watch, patch, get, create, delete]
 
   - apiGroups:
@@ -41,16 +41,14 @@ rules:
     resources: [kopfpeerings]
     verbs: [list, watch, patch, get]
 
-  - apiGroups: [imran.dev.io, apps, ""]
-    resources: [microservice, microservices, deployments, pods, services, services/proxy, events]
+  - apiGroups: [imran.dev.io, apps, "", networking.istio.io]
+    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices]
     verbs: [list, watch, patch, get, create, delete]
 
   - apiGroups: [batch, extensions]
     resources: [jobs]
     verbs: [create]
-  - apiGroups: [""]
-    resources: [pods, persistentvolumeclaims]
-    verbs: [create]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
