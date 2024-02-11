@@ -1,5 +1,6 @@
 from typing import Any
 from pydantic import BaseModel
+from pykube.objects import NamespacedAPIObject
 
 
 
@@ -16,6 +17,7 @@ class DeployConfig(BaseModel):
     replicas: int = 1
     labels: dict[str, Any]
     port: int = 80
+    path: str = "/"
     env: list[dict[str, Any]] = []
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
@@ -32,16 +34,17 @@ class ServiceConfig(BaseModel):
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
 
+class VirtualServiceResource(NamespacedAPIObject):
+    """VirtualService configuration."""
+    version: str = "networking.istio.io/v1alpha3"
+    endpoint: str = "virtualservices"
+    kind: str = "VirtualService"
+
 class VirtualServiceConfig(BaseModel):
-    """Virtual Service configuration."""
-    name: str
-    host: str
-    port: int = 80
+    """VirtualService configuration."""
     labels: dict[str, str] = {}
-    annotations: dict[str, str] = {}
-    gateways: list[str] = []
-    http: list[dict[str, Any]] = []
-    tcp: list[dict[str, Any]] = []
+    host: str = ""
+    gateway: str = "microservice-gateway"
     path: str = "/"
-    service: str = ""
-    rewrite: str = ""
+    timeout: str = "5s"
+    port: int = 80
