@@ -1,0 +1,22 @@
+IMAGE_NAME=sayedimran/microservice-operator
+VERSION=v1.0.0
+
+
+build:
+	docker build -t $(IMAGE_NAME):$(VERSION) .
+
+push:
+	docker push $(IMAGE_NAME):$(VERSION)
+
+run:
+	docker run -d $(IMAGE_NAME):$(VERSION)
+
+stop:
+	docker stop $(docker ps -aq --filter ancestor=$(IMAGE_NAME):$(VERSION) --format="{{.ID}}")
+
+clean:
+	docker rmi $(IMAGE_NAME):$(VERSION)
+
+all: build push run
+
+.PHONY: build push run stop clean all
