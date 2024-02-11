@@ -18,7 +18,7 @@ def custom_login_fn(**kwargs):
 
 @kopf.on.create('imran.dev.io', 'v1alpha1', 'microservices')
 def create_fn(spec, **kwargs):
-    deploy_config = DeployConfig(**spec)
+    deploy_config = DeployConfig(**spec, namespace=kwargs['body']['metadata']['namespace'])
     deployment = kubernetes_controller.create_deployment(deploy_config, name=kwargs['body']['metadata']['name'])
     kopf.adopt(deployment)
     pykube.Deployment(api, deployment).create()
@@ -35,7 +35,7 @@ def create_fn(spec, **kwargs):
 
 @kopf.on.update('imran.dev.io', 'v1alpha1', 'microservices')
 def update_fn(spec, **kwargs):
-    deploy_config = DeployConfig(**spec)
+    deploy_config = DeployConfig(**spec, namespace=kwargs['body']['metadata']['namespace'])
     deployment = kubernetes_controller.update_deployment(deploy_config)
     service = kubernetes_controller.update_service(ServiceConfig(**deploy_config.model_dump()))
     virtual_service = kubernetes_controller.update_virtual_service(VirtualServiceConfig(**deploy_config.model_dump()))

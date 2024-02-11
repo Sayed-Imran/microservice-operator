@@ -14,6 +14,7 @@ class Resource(BaseModel):
 class DeployConfig(BaseModel):
     """Deploy configuration."""
     image: str
+    namespace: str = "default"
     replicas: int = 1
     labels: dict[str, Any]
     port: int = 80
@@ -29,6 +30,7 @@ class DeployConfig(BaseModel):
     
 class ServiceConfig(BaseModel):
     """Service configuration."""
+    namespace: str = "default"
     port: int = 80
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
@@ -45,6 +47,7 @@ class VirtualServiceConfig(BaseModel):
     labels: dict[str, str] = {}
     host: str = ""
     gateway: str = "microservice-gateway"
+    namespace: str = "default"
     path: str = "/"
     timeout: str = "5s"
     port: int = 80

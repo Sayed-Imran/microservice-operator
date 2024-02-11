@@ -81,10 +81,7 @@ class KubernetesController:
         return service
 
     def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
-        services = pykube.Service.objects(self.api).filter(selector=virtual_service_config.labels)
-        for service in services:
-            service_details = service
-            break
+        service_details = self.get_service_by_labels(virtual_service_config.labels, namespace=virtual_service_config.namespace)
         virtual_service = {
             "apiVersion": "networking.istio.io/v1alpha3",
             "kind": "VirtualService",
@@ -125,7 +122,7 @@ class KubernetesController:
 
 
     def update_deployment(self, deploy_config: DeployConfig):
-        deployment = self.get_deployment_by_labels(deploy_config.labels)
+        deployment = self.get_deployment_by_labels(deploy_config.labels, namespace=deploy_config.namespace)
         deployment.obj['spec']['replicas'] = deploy_config.replicas
         deployment.obj['spec']['template']['spec']['containers'][0]['image'] = deploy_config.image
         deployment.obj['spec']['template']['spec']['containers'][0]['env'] = deploy_config.env
@@ -144,7 +141,7 @@ class KubernetesController:
 
 
     def update_service(self, service_config: ServiceConfig):
-        service = self.get_service_by_labels(service_config.labels)
+        service = self.get_service_by_labels(service_config.labels, namespace=service_config.namespace)
         service.obj['spec']['ports'][0]['port'] = service_config.port
         service.obj['spec']['ports'][0]['targetPort'] = service_config.port
         service.update()
@@ -152,7 +149,7 @@ class KubernetesController:
 
 
     def update_virtual_service(self, virtual_service_config: VirtualServiceConfig):
-        virtual_service = self.get_virtual_service_by_labels(virtual_service_config.labels)
+        virtual_service = self.get_virtual_service_by_labels(virtual_service_config.labels, namespace=virtual_service_config.namespace)
         virtual_service.obj['spec']['gateways'] = [virtual_service_config.gateway]
         virtual_service.obj['spec']['http'][0]['match'][0]['uri']['prefix'] = virtual_service_config.path
         virtual_service.obj['spec']['http'][0]['route'][0]['destination']['port']['number'] = virtual_service_config.port
@@ -161,17 +158,18 @@ class KubernetesController:
         return virtual_service
 
 
-    def get_deployment_by_labels(self, labels: dict):
-        deployments = pykube.Deployment.objects(self.api).filter(selector=labels)
+    def get_deployment_by_labels(self, labels: dict, namespace: str = 'default'):
+        deployments = pykube.Deployment.objects(self.api).filter(selector=labels, namespace=namespace)
         for deployment in deployments:
             return deployment
-    
-    def get_service_by_labels(self, labels: dict):
-        services = pykube.Service.objects(self.api).filter(selector=labels)
+
+    def get_service_by_labels(self, labels: dict, namespace: str = 'default'):
+        services = pykube.Service.objects(self.api).filter(selector=labels, namespace=namespace)
         for service in services:
             return service
+
         
-    def get_virtual_service_by_labels(self, labels: dict):
-        virtual_services = VirtualServiceResource.objects(self.api).filter(selector=labels)
+    def get_virtual_service_by_labels(self, labels: dict, namespace: str = 'default'):
+        virtual_services = VirtualServiceResource.objects(self.api).filter(selector=labels, namespace=namespace)
         for virtual_service in virtual_services:
             return virtual_service
