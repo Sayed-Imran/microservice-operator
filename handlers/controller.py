@@ -2,7 +2,6 @@ from kubernetes import client
 from schemas import DeployConfig
 
 
-
 class KubernetesController:
     def create_deployment(self, deploy_config: DeployConfig, apps_v1: client.AppsV1Api):
         try:
@@ -15,9 +14,7 @@ class KubernetesController:
                 ),
                 spec=client.V1DeploymentSpec(
                     replicas=deploy_config.replicas,
-                    selector=client.V1LabelSelector(
-                        match_labels=deploy_config.labels
-                    ),
+                    selector=client.V1LabelSelector(match_labels=deploy_config.labels),
                     template=client.V1PodTemplateSpec(
                         metadata=client.V1ObjectMeta(
                             labels=deploy_config.labels,
@@ -29,10 +26,7 @@ class KubernetesController:
                                     name=deploy_config.name,
                                     image=deploy_config.image,
                                     env=[
-                                        client.V1EnvVar(
-                                            name=key,
-                                            value=str(value)
-                                        )
+                                        client.V1EnvVar(name=key, value=str(value))
                                         for key, value in deploy_config.env.items()
                                     ],
                                     ports=[
@@ -133,7 +127,6 @@ class KubernetesController:
             namespace=namespace,
         )
 
-
     def update_deployment(self, deploy_config: DeployConfig, apps_v1: client.AppsV1Api):
         body = client.V1Deployment(
             metadata=client.V1ObjectMeta(
@@ -144,9 +137,7 @@ class KubernetesController:
             ),
             spec=client.V1DeploymentSpec(
                 replicas=deploy_config.replicas,
-                selector=client.V1LabelSelector(
-                    match_labels=deploy_config.labels
-                ),
+                selector=client.V1LabelSelector(match_labels=deploy_config.labels),
                 template=client.V1PodTemplateSpec(
                     metadata=client.V1ObjectMeta(
                         labels=deploy_config.labels,
@@ -158,10 +149,7 @@ class KubernetesController:
                                 name=deploy_config.name,
                                 image=deploy_config.image,
                                 env=[
-                                    client.V1EnvVar(
-                                        name=key,
-                                        value=str(value)
-                                    )
+                                    client.V1EnvVar(name=key, value=str(value))
                                     for key, value in deploy_config.env.items()
                                 ],
                                 ports=[
