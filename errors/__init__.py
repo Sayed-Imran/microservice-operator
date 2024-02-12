@@ -1,3 +1,0 @@
-class KubeConfigError(Exception):
-    pass
-
