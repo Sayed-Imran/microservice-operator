@@ -51,7 +51,7 @@ def create_fn(spec, **kwargs):
         "children": [
             deployment["metadata"],
             service["metadata"],
-            # virtual_service["metadata"],
+            virtual_service["metadata"],
         ],
     }
 
