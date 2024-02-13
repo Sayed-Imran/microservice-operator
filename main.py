@@ -8,6 +8,7 @@ from schemas import (
     VirtualServiceResource,
 )
 from config import EnvConfig
+from constants import UNWANTED_ANNOTATIONS
 
 kubernetes_controller = KubernetesController()
 api = kubernetes_controller.get_api()
@@ -23,23 +24,26 @@ def custom_login_fn(**kwargs):
 
 @kopf.on.create("imran.dev.io", "v1alpha1", "microservices")
 def create_fn(spec, **kwargs):
-    deploy_config = DeployConfig(
-        **spec, namespace=kwargs["body"]["metadata"]["namespace"]
-    )
-    deployment = kubernetes_controller.create_deployment(
-        deploy_config, name=kwargs["body"]["metadata"]["name"]
-    )
+
+    """
+    The create_fn function is called when a new instance of the CustomResource is created.
+    It creates a deployment, service and virtualservice in the same namespace as the CustomResource.
+    The deployment has one replica by default, but this can be changed by setting replicas in spec.
+    
+    :param spec: Create a deployconfig object
+    :param **kwargs: Pass the namespace and name of the resource to be created
+    :return: A dictionary containing the metadata of the created resources
+    :doc-author: Trelent
+    """
+    deploy_config = DeployConfig(**spec, namespace=kwargs['body']['metadata']['namespace'])
+    deployment = kubernetes_controller.create_deployment(deploy_config, name=kwargs['body']['metadata']['name'])
+    service = kubernetes_controller.create_service(ServiceConfig(**deploy_config.model_dump()))
+    virtual_service = kubernetes_controller.create_virtual_service(VirtualServiceConfig(**deploy_config.model_dump()))
     kopf.adopt(deployment)
-    pykube.Deployment(api, deployment).create()
-    service = kubernetes_controller.create_service(
-        ServiceConfig(**deploy_config.model_dump())
-    )
+    kopf.adopt(virtual_service)
     kopf.adopt(service)
     pykube.Service(api, service).create()
-    virtual_service = kubernetes_controller.create_virtual_service(
-        VirtualServiceConfig(**deploy_config.model_dump())
-    )
-    kopf.adopt(virtual_service)
+    pykube.Deployment(api, deployment).create()
     VirtualServiceResource(api, virtual_service).create()
     api.session.close()
 
@@ -47,13 +51,24 @@ def create_fn(spec, **kwargs):
         "children": [
             deployment["metadata"],
             service["metadata"],
-            virtual_service["metadata"],
+            # virtual_service["metadata"],
         ],
     }
 
 
-@kopf.on.update("imran.dev.io", "v1alpha1", "microservices")
+@kopf.on.update('imran.dev.io', 'v1alpha1', 'microservices')
 def update_fn(spec, **kwargs):
+    """
+    The update_fn function is called when a user updates an existing resource.
+    The function takes the following arguments:
+        spec: The specification of the resource to be updated, as defined in your CRD's schema.
+        **kwargs: A dictionary containing metadata about the request and other information.  This includes things like which namespace this update was requested for, who made the request, etc...  For more details see https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/handler/_helpers_test.go#L31
+    
+    :param spec: Get the configuration of the deployment
+    :param **kwargs: Pass the body of the request to update_fn
+    :return: A dictionary with the keys "children" and "status" containing the metadata of the updated resources and the status of the resource respectively
+    :doc-author: Trelent
+    """
     deploy_config = DeployConfig(
         **spec, namespace=kwargs["body"]["metadata"]["namespace"]
     )
