@@ -35,10 +35,11 @@ def create_fn(spec, **kwargs):
     The create_fn function is called when a new instance of the CustomResource is created.
     It creates a deployment, service and virtualservice in the same namespace as the CustomResource.
     The deployment has one replica by default, but this can be changed by setting replicas in spec.
-
+    
     :param spec: Create a deployconfig object
     :param **kwargs: Pass the namespace and name of the resource to be created
     :return: A dictionary containing the metadata of the created resources
+    :doc-author: Trelent
     """
     deploy_config = DeployConfig(
         **spec, namespace=kwargs["body"]["metadata"]["namespace"]
@@ -49,15 +50,16 @@ def create_fn(spec, **kwargs):
     service = kubernetes_controller.create_service(
         ServiceConfig(**deploy_config.model_dump())
     )
-    virtual_service = kubernetes_controller.create_virtual_service(
-        VirtualServiceConfig(**deploy_config.model_dump())
-    )
     kopf.adopt(deployment)
-    kopf.adopt(virtual_service)
     kopf.adopt(service)
-    pykube.Service(api, service).create()
     pykube.Deployment(api, deployment).create()
-    VirtualServiceResource(api, virtual_service).create()
+    pykube.Service(api, service).create()
+    if spec.get("path"):
+        virtual_service = kubernetes_controller.create_virtual_service(
+            VirtualServiceConfig(**deploy_config.model_dump())
+        )
+        kopf.adopt(virtual_service)
+        VirtualServiceResource(api, virtual_service).create()
     api.session.close()
 
     return {
@@ -75,7 +77,7 @@ def update_fn(spec, **kwargs):
     The update_fn function is called when a user updates an existing resource.
     The function takes the following arguments:
         spec: The specification of the resource to be updated, as defined in your CRD's schema.
-        **kwargs: A dictionary containing metadata about the request and other information.  This includes things like which namespace this update was requested for, who made the request, etc...  For more details see https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/handler/_helpers_test.go#L31
+        **kwargs: A dictionary containing metadata about the request and other information.  This includes things like which namespace this update was requested for, who made the request, etc.
 
     :param spec: Get the configuration of the deployment
     :param **kwargs: Pass the body of the request to update_fn
@@ -88,14 +90,13 @@ def update_fn(spec, **kwargs):
     service = kubernetes_controller.update_service(
         ServiceConfig(**deploy_config.model_dump())
     )
-    virtual_service = kubernetes_controller.update_virtual_service(
-        VirtualServiceConfig(**deploy_config.model_dump())
-    )
+    children = [deployment.obj["metadata"], service.obj["metadata"]]
+    if spec.get("path"):
+        virtual_service = kubernetes_controller.update_virtual_service(
+            VirtualServiceConfig(**deploy_config.model_dump())
+        )
+        children.append(virtual_service.obj["metadata"])
     api.session.close()
     return {
-        "children": [
-            deployment.obj["metadata"],
-            service.obj["metadata"],
-            virtual_service.obj["metadata"],
-        ]
+        "children": children,
     }
