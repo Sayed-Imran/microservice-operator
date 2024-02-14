@@ -95,9 +95,7 @@ spec:
       type: integer
       description: The number of replicas
       jsonPath: .spec.replicas
-      priority: 0
     - name: Port
       type: integer
       description: The port number
       jsonPath: .spec.port
-      priority: 0
