@@ -35,7 +35,7 @@ def create_fn(spec, **kwargs):
     The create_fn function is called when a new instance of the CustomResource is created.
     It creates a deployment, service and virtualservice in the same namespace as the CustomResource.
     The deployment has one replica by default, but this can be changed by setting replicas in spec.
-    
+
     :param spec: Create a deployconfig object
     :param **kwargs: Pass the namespace and name of the resource to be created
     :return: A dictionary containing the metadata of the created resources
