@@ -1,7 +1,0 @@
-.env
-.ruff_cache/
-*.yml
-__pycache__/
-MAKEFILE
-.gitignore
-.vscode/
