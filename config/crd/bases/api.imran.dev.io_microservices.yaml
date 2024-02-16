@@ -1,0 +1,50 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.3
+  creationTimestamp: null
+  name: microservices.api.imran.dev.io
+spec:
+  group: api.imran.dev.io
+  names:
+    kind: Microservice
+    listKind: MicroserviceList
+    plural: microservices
+    singular: microservice
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Microservice is the Schema for the microservices API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MicroserviceSpec defines the desired state of Microservice
+            properties:
+              foo:
+                description: Foo is an example field of Microservice. Edit microservice_types.go
+                  to remove/update
+                type: string
+            type: object
+          status:
+            description: MicroserviceStatus defines the observed state of Microservice
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
