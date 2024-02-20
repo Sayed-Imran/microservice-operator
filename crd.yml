@@ -64,6 +64,44 @@ spec:
                               type: string
                             key:
                               type: string
+              volumeMounts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    mountPath:
+                      type: string
+                    readOnly:
+                      type: boolean
+              volumes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    secret:
+                      type: object
+                      properties:
+                        secretName:
+                          type: string
+                    configMap:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                    persistentVolumeClaim:
+                      type: object
+                      properties:
+                        claimName:
+                          type: string
+                    hostPath:
+                      type: object
+                      properties:
+                        path:
+                          type: string
               resources:
                 type: object
                 properties:
