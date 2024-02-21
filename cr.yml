@@ -1,4 +1,4 @@
-apiVersion: imran.dev.io/v1alpha1
+apiVersion: imran.dev.io/v1alpha2
 kind: Microservice
 metadata:
   name: micron
@@ -9,6 +9,7 @@ spec:
   replicas: 3
   image: sayedimran/fastapi-sample-app:v4
   port: 7000
+  path: /api/v1/
   env:
     - name: ENV
       value: test
