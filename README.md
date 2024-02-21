@@ -55,7 +55,7 @@ spec:
       memory: 128Mi
 ```
 
-The above custom resource will create a deployment with 3 replicas and expose the same as a service. The deployment will use the image `sayedimran/fastapi-sample-app:v4` and will expose the service on port `7000`. The environment variables `ENV` and `LOG_LEVEL` will be set to `dev` and `debug` respectively. The resources for the deployment will be limited to 100m CPU and 128Mi memory.
+The above custom resource will create a deployment with 3 replicas and expose the same as a service. The deployment will use the image `sayedimran/fastapi-sample-app:v4` and will expose the service on port `7000`. The environment variables `ENV` and `LOG_LEVEL` will be set to `dev` and `debug` respectively. The resources for the deployment will be limited to 100m CPU and 128Mi memory and the requests will be the same.
 
 ## Development
 
