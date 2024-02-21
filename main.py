@@ -54,20 +54,18 @@ def create_fn(spec, **kwargs):
     kopf.adopt(service)
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
+    children = [deployment["metadata"], service["metadata"]]
     if spec.get("path"):
         virtual_service = kubernetes_controller.create_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
         )
         kopf.adopt(virtual_service)
         VirtualServiceResource(api, virtual_service).create()
+        children.append(virtual_service["metadata"])
     api.session.close()
 
     return {
-        "children": [
-            deployment["metadata"],
-            service["metadata"],
-            virtual_service["metadata"],
-        ],
+        "children": children,
     }
 
 
