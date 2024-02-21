@@ -64,17 +64,6 @@ spec:
                               type: string
                             key:
                               type: string
-              volumeMounts:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    mountPath:
-                      type: string
-                    readOnly:
-                      type: boolean
               resources:
                 type: object
                 properties:
