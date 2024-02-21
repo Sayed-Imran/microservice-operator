@@ -1,6 +1,5 @@
 from typing import Any
 from pydantic import BaseModel
-from pykube.objects import NamespacedAPIObject
 
 
 class Resource(BaseModel):
@@ -39,23 +38,3 @@ class ServiceConfig(BaseModel):
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
-
-
-class VirtualServiceResource(NamespacedAPIObject):
-    """VirtualService configuration."""
-
-    version: str = "networking.istio.io/v1alpha3"
-    endpoint: str = "virtualservices"
-    kind: str = "VirtualService"
-
-
-class VirtualServiceConfig(BaseModel):
-    """VirtualService configuration."""
-
-    labels: dict[str, str] = {}
-    host: str = ""
-    gateway: str = "microservice-gateway"
-    namespace: str = "default"
-    path: str = "/"
-    timeout: str = "5s"
-    port: int = 80

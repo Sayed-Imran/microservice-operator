@@ -21,7 +21,6 @@ spec:
         properties:
           spec:
             type: object
-            x-kubernetes-preserve-unknown-fields: true
             properties:
               replicas:
                 type: integer
@@ -32,8 +31,6 @@ spec:
                 type: integer
                 minimum: 1
                 maximum: 65535
-              path:
-                type: string
               labels:
                 type: object
                 additionalProperties:

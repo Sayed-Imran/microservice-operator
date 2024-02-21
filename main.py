@@ -1,12 +1,7 @@
 import kopf
 import pykube
 from handlers.py_kube_controller import KubernetesController
-from schemas import (
-    DeployConfig,
-    ServiceConfig,
-    VirtualServiceConfig,
-    VirtualServiceResource,
-)
+from schemas import DeployConfig, ServiceConfig
 from config import EnvConfig
 
 kubernetes_controller = KubernetesController()
@@ -51,17 +46,12 @@ def create_fn(spec, **kwargs):
         ServiceConfig(**deploy_config.model_dump())
     )
     kopf.adopt(deployment)
+    deployment["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
     kopf.adopt(service)
+    service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
     children = [deployment["metadata"], service["metadata"]]
-    if spec.get("path"):
-        virtual_service = kubernetes_controller.create_virtual_service(
-            VirtualServiceConfig(**deploy_config.model_dump())
-        )
-        kopf.adopt(virtual_service)
-        VirtualServiceResource(api, virtual_service).create()
-        children.append(virtual_service["metadata"])
     api.session.close()
 
     return {
@@ -89,11 +79,6 @@ def update_fn(spec, **kwargs):
         ServiceConfig(**deploy_config.model_dump())
     )
     children = [deployment.obj["metadata"], service.obj["metadata"]]
-    if spec.get("path"):
-        virtual_service = kubernetes_controller.update_virtual_service(
-            VirtualServiceConfig(**deploy_config.model_dump())
-        )
-        children.append(virtual_service.obj["metadata"])
     api.session.close()
     return {
         "children": children,

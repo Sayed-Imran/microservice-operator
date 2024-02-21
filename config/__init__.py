@@ -2,7 +2,7 @@ from typing import Literal
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+load_dotenv()
 
 
 class _EnvConfig(BaseSettings):
@@ -12,4 +12,3 @@ class _EnvConfig(BaseSettings):
 
 
 EnvConfig = _EnvConfig()
-print(EnvConfig.ENV)

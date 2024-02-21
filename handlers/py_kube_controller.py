@@ -3,8 +3,6 @@ from config import EnvConfig
 from schemas import (
     DeployConfig,
     ServiceConfig,
-    VirtualServiceConfig,
-    VirtualServiceResource,
 )
 
 
@@ -19,7 +17,7 @@ class KubernetesController:
         return self.api
 
     def create_deployment(self, deploy_config: DeployConfig, name: str):
-        deployment = {
+        return {
             "apiVersion": "apps/v1",
             "kind": "Deployment",
             "metadata": {
@@ -59,10 +57,8 @@ class KubernetesController:
             },
         }
 
-        return deployment
-
     def create_service(self, service_config: ServiceConfig):
-        service = {
+        return {
             "apiVersion": "v1",
             "kind": "Service",
             "metadata": {
@@ -80,49 +76,6 @@ class KubernetesController:
                 "type": service_config.type,
             },
         }
-        return service
-
-    def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
-        service_details = self.get_service_by_labels(
-            virtual_service_config.labels, namespace=virtual_service_config.namespace
-        )
-        virtual_service = {
-            "apiVersion": "networking.istio.io/v1alpha3",
-            "kind": "VirtualService",
-            "metadata": {
-                "labels": virtual_service_config.labels,
-            },
-            "spec": {
-                "hosts": ["*"],
-                "gateways": [virtual_service_config.gateway],
-                "http": [
-                    {
-                        "match": [
-                            {
-                                "uri": {
-                                    "prefix": virtual_service_config.path,
-                                }
-                            }
-                        ],
-                        "rewrite": {
-                            "uri": "/",
-                        },
-                        "route": [
-                            {
-                                "destination": {
-                                    "host": f"{service_details.name}.{service_details.namespace}.svc.cluster.local",
-                                    "port": {
-                                        "number": virtual_service_config.port,
-                                    },
-                                },
-                                "timeout": virtual_service_config.timeout,
-                            }
-                        ],
-                    }
-                ],
-            },
-        }
-        return virtual_service
 
     def update_deployment(self, deploy_config: DeployConfig):
         deployment = self.get_deployment_by_labels(
@@ -157,23 +110,6 @@ class KubernetesController:
         service.update()
         return service
 
-    def update_virtual_service(self, virtual_service_config: VirtualServiceConfig):
-        virtual_service = self.get_virtual_service_by_labels(
-            virtual_service_config.labels, namespace=virtual_service_config.namespace
-        )
-        virtual_service.obj["spec"]["gateways"] = [virtual_service_config.gateway]
-        virtual_service.obj["spec"]["http"][0]["match"][0]["uri"][
-            "prefix"
-        ] = virtual_service_config.path
-        virtual_service.obj["spec"]["http"][0]["route"][0]["destination"]["port"][
-            "number"
-        ] = virtual_service_config.port
-        virtual_service.obj["spec"]["http"][0][
-            "timeout"
-        ] = virtual_service_config.timeout
-        virtual_service.update()
-        return virtual_service
-
     def get_deployment_by_labels(self, labels: dict, namespace: str = "default"):
         deployments = pykube.Deployment.objects(self.api).filter(
             selector=labels, namespace=namespace
@@ -187,10 +123,3 @@ class KubernetesController:
         )
         for service in services:
             return service
-
-    def get_virtual_service_by_labels(self, labels: dict, namespace: str = "default"):
-        virtual_services = VirtualServiceResource.objects(self.api).filter(
-            selector=labels, namespace=namespace
-        )
-        for virtual_service in virtual_services:
-            return virtual_service
