@@ -38,3 +38,15 @@ class ServiceConfig(BaseModel):
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
+
+
+class VirtualServiceConfig(BaseModel):
+    """VirtualService configuration."""
+
+    labels: dict[str, str] = {}
+    host: str = ""
+    gateway: str = "istio-system/microservice-gateway"
+    namespace: str = "default"
+    path: str = "/"
+    timeout: str = "5s"
+    port: int = 80
