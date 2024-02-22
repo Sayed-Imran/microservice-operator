@@ -1,11 +1,10 @@
 import pykube
 from config import EnvConfig
-from custom_resources import GatewayResource
+from custom_resources import GatewayResource, VirtualServiceResource
 from schemas import (
     DeployConfig,
     ServiceConfig,
     VirtualServiceConfig,
-    VirtualServiceResource,
 )
 
 
