@@ -1,14 +1,8 @@
 import logging
-from pykube.objects import NamespacedAPIObject
+from custom_resources import GatewayResource
 
-from handlers.py_kube_controller import KubernetesController
+from handlers.controller import KubernetesController
 
-class GatewayResource(NamespacedAPIObject):
-    """Gateway configuration."""
-
-    version: str = "networking.istio.io/v1alpha3"
-    endpoint: str = "gateways"
-    kind: str = "Gateway"
 
 gateway = {
     "apiVersion": "networking.istio.io/v1alpha3",
@@ -37,8 +31,12 @@ try:
     kubernetes_controller = KubernetesController()
     api = kubernetes_controller.get_api()
 
-    gateway_resource = GatewayResource(api, gateway)
-    gateway_resource.create()
+    if not kubernetes_controller.get_gateway("microservice-gateway", "istio-system"):
+        gateway_resource = GatewayResource(gateway)
+        kubernetes_controller.create_gateway(gateway_resource)
+        logging.info("Gateway created.")
+    else:
+        logging.info("Gateway already exists.")
 except Exception as e:
     logging.error(f"Error creating gateway: {e}")
     raise e
