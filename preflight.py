@@ -28,10 +28,13 @@ gateway = {
     },
 }
 
-def run ():
+
+def run():
     try:
         kubernetes_controller = KubernetesController()
-        if not kubernetes_controller.get_gateway("microservice-gateway", "istio-system"):
+        if not kubernetes_controller.get_gateway(
+            "microservice-gateway", "istio-system"
+        ):
             gateway_resource = GatewayResource(gateway)
             kubernetes_controller.create_gateway(gateway_resource)
             logging.info("Gateway created.")
