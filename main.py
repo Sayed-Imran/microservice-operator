@@ -1,5 +1,6 @@
 import kopf
 import pykube
+import preflight
 from custom_resources import VirtualServiceResource
 from handlers.controller import KubernetesController
 from schemas import (
@@ -27,6 +28,18 @@ def custom_login_fn(**kwargs):
         return kopf.login_with_kubeconfig(**kwargs)
     else:
         return kopf.login_with_service_account(**kwargs)
+
+
+@kopf.on.startup()
+def prepare_fn(**_):
+    """
+    The prepare_fn function is called when the operator starts up.
+    It is used to prepare the environment for the operator to run in.
+
+    :param **_: Pass a variable number of keyword arguments to the function
+    :return: None
+    """
+    preflight.run()
 
 
 @kopf.on.create("imran.dev.io", "v1alpha1", "microservices")

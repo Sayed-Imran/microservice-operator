@@ -35,8 +35,7 @@ def run():
         if not kubernetes_controller.get_gateway(
             "microservice-gateway", "istio-system"
         ):
-            gateway_resource = GatewayResource(gateway)
-            kubernetes_controller.create_gateway(gateway_resource)
+            kubernetes_controller.create_gateway(gateway)
             logging.info("Gateway created.")
         else:
             logging.info("Gateway already exists.")
