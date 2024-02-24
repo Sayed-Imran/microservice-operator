@@ -195,7 +195,7 @@ class KubernetesController:
         for virtual_service in virtual_services:
             return virtual_service
 
-    def get_gateway_by_name(self, name: str, namespace: str = "default"):
+    def get_gateway(self, name: str, namespace: str = "default"):
         gateways = GatewayResource.objects(self.api).filter(
             selector={"name": name}, namespace=namespace
         )

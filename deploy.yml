@@ -19,7 +19,7 @@ rules:
     verbs: [list, watch]
 
   - apiGroups: ["", "apps", "batch", "extensions", "networking.istio.io"]
-    resources: [namespaces, deployments, pods, services, services/proxy, events, virtualservices]
+    resources: [namespaces, deployments, pods, services, services/proxy, events, virtualservices, gateway]
     verbs: [list, watch, patch, get, create, delete]
 
   - apiGroups:
@@ -42,7 +42,7 @@ rules:
     verbs: [list, watch, patch, get]
 
   - apiGroups: [imran.dev.io, apps, "", networking.istio.io]
-    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices]
+    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices, gateway]
     verbs: [list, watch, patch, get, create, delete]
 
   - apiGroups: [batch, extensions]
