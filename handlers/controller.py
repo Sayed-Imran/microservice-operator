@@ -195,12 +195,10 @@ class KubernetesController:
         for virtual_service in virtual_services:
             return virtual_service
 
-    def get_gateway(self, name: str, namespace: str = "default"):
-        gateways = GatewayResource.objects(self.api).filter(
-            selector={"name": name}, namespace=namespace
+    def get_gateway_by_name(self, name: str, namespace: str = "default"):
+        return pykube.query.Query(self.api, GatewayResource, namespace).get_or_none(
+            name
         )
-        for gateway in gateways:
-            return gateway
 
     def create_gateway(self, gateway_config: dict):
         gateway = GatewayResource(self.api, gateway_config)

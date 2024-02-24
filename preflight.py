@@ -1,5 +1,4 @@
 import logging
-from custom_resources import GatewayResource
 
 from handlers.controller import KubernetesController
 
@@ -32,7 +31,7 @@ gateway = {
 def run():
     try:
         kubernetes_controller = KubernetesController()
-        if not kubernetes_controller.get_gateway(
+        if not kubernetes_controller.get_gateway_by_name(
             "microservice-gateway", "istio-system"
         ):
             kubernetes_controller.create_gateway(gateway)
