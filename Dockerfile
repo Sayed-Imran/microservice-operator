@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.11-slim-buster
 
 WORKDIR /app
 
@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["kopf", "run", "main.py"]
+ENTRYPOINT ["kopf", "run", "main.py"]
