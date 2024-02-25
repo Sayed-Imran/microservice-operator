@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice-operator
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: microservice-operator
+  template:
+    metadata:
+      labels:
+        app: microservice-operator
+    spec:
+      serviceAccountName: microservice-operator-sa
+      containers:
+        - name: microservice-operator
+          image: sayedimran/microservice-operator:v2.0.0
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: ENV
+              value: "prod"

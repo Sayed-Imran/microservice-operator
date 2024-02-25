@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: kube-system
+  name: microservice-operator-role
+rules:
+  - apiGroups: [imran.dev.io]
+    resources: [kopfpeerings]
+    verbs: [list, watch, patch, get]
+
+  - apiGroups: [imran.dev.io, apps, "", networking.istio.io]
+    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices, gateway]
+    verbs: [list, watch, patch, get, create, delete]
+
+  - apiGroups: [batch, extensions]
+    resources: [jobs]
+    verbs: [create]
