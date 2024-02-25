@@ -12,90 +12,6 @@ spec:
     shortNames:
     - ms
   versions:
-  - name: v1alpha1
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        properties:
-          spec:
-            type: object
-            properties:
-              replicas:
-                type: integer
-                minimum: 1
-              image:
-                type: string
-              port:
-                type: integer
-                minimum: 1
-                maximum: 65535
-              labels:
-                type: object
-                additionalProperties:
-                  type: string
-              env:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    value:
-                      type: string
-                    valueFrom:
-                      type: object
-                      properties:
-                        secretKeyRef:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                            key:
-                              type: string
-                        configMapKeyRef:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                            key:
-                              type: string
-              resources:
-                type: object
-                properties:
-                  limits:
-                    type: object
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                  requests:
-                    type: object
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-            required:
-            - replicas
-            - image
-            - port
-          status:
-            type: object
-            properties:
-              ready:
-                type: string
-    additionalPrinterColumns:
-    - name: Replicas
-      type: integer
-      description: The number of replicas
-      jsonPath: .spec.replicas
-    - name: Port
-      type: integer
-      description: The port number
-      jsonPath: .spec.port
   - name: v1alpha2
     served: true
     storage: true
@@ -111,12 +27,23 @@ spec:
                 minimum: 1
               image:
                 type: string
+              imagePullPolicy:
+                type: string
+                enum:
+                - Always
+                - IfNotPresent
+                - Never
+              imagePullSecrets:
+                type: array
+                items:
+                  type: string
               port:
                 type: integer
                 minimum: 1
                 maximum: 65535
               path:
                 type: string
+                default: /
               labels:
                 type: object
                 additionalProperties:
@@ -183,6 +110,10 @@ spec:
       type: integer
       description: The port number
       jsonPath: .spec.port
+    - name: Image
+      type: string
+      description: The image
+      jsonPath: .spec.image
     - name: Path
       type: string
       description: The path
