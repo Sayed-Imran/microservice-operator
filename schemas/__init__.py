@@ -14,6 +14,7 @@ class Resource(BaseModel):
 class DeployConfig(BaseModel):
     """Deploy configuration."""
 
+    name: str
     image: str
     namespace: str = "default"
     replicas: int = 1
@@ -33,6 +34,7 @@ class DeployConfig(BaseModel):
 class ServiceConfig(BaseModel):
     """Service configuration."""
 
+    name: str
     namespace: str = "default"
     port: int = 80
     type: str = "ClusterIP"
@@ -43,6 +45,7 @@ class ServiceConfig(BaseModel):
 class VirtualServiceConfig(BaseModel):
     """VirtualService configuration."""
 
+    name: str
     labels: dict[str, str] = {}
     host: str = ""
     gateway: str = "istio-system/microservice-gateway"
