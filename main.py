@@ -42,89 +42,20 @@ def prepare_fn(**_):
     preflight.run()
 
 
-@kopf.on.create("imran.dev.io", "v1alpha1", "microservices")
-def create_fn(spec, **kwargs):
-    """
-    The create_fn function is called when a new instance of the CustomResource is created.
-    It creates a deployment, service and virtualservice in the same namespace as the CustomResource.
-    The deployment has one replica by default, but this can be changed by setting replicas in spec.
-
-    :param spec: Create a deployconfig object
-    :param **kwargs: Pass the namespace and name of the resource to be created
-    :return: A dictionary containing the metadata of the created resources
-    :doc-author: Trelent
-    """
-    deploy_config = DeployConfig(
-        **spec, namespace=kwargs["body"]["metadata"]["namespace"]
-    )
-    deployment = kubernetes_controller.create_deployment(
-        deploy_config, name=kwargs["body"]["metadata"]["name"]
-    )
-    service = kubernetes_controller.create_service(
-        ServiceConfig(**deploy_config.model_dump())
-    )
-
-    kopf.adopt(deployment)
-    kopf.adopt(service)
-    deployment["metadata"]["name"] = service["metadata"]["name"] = kwargs["body"][
-        "metadata"
-    ]["name"]
-    pykube.Deployment(api, deployment).create()
-    pykube.Service(api, service).create()
-
-    api.session.close()
-
-    return {
-        "children": [
-            deployment["metadata"],
-            service["metadata"],
-        ],
-    }
-
-
-@kopf.on.update("imran.dev.io", "v1alpha1", "microservices")
-def update_fn(spec, **kwargs):
-    """
-    The update_fn function is called when a user updates an existing resource.
-    The function takes the following arguments:
-        spec: The specification of the resource to be updated, as defined in your CRD's schema.
-        **kwargs: A dictionary containing metadata about the request and other information.  This includes things like which namespace this update was requested for, who made the request, etc.
-
-    :param spec: Get the configuration of the deployment
-    :param **kwargs: Pass the body of the request to update_fn
-    :return: A dictionary with the keys "children" and "status" containing the metadata of the updated resources and the status of the resource respectively
-    """
-    deploy_config = DeployConfig(
-        **spec, namespace=kwargs["body"]["metadata"]["namespace"]
-    )
-    deployment = kubernetes_controller.update_deployment(deploy_config)
-    service = kubernetes_controller.update_service(
-        ServiceConfig(**deploy_config.model_dump())
-    )
-    children = [deployment.obj["metadata"], service.obj["metadata"]]
-    api.session.close()
-    return {
-        "children": children,
-    }
-
-
-kopf.on.create("imran.dev.io", "v1alpha2", "microservices")
-
-
+@kopf.on.create("imran.dev.io", "v1alpha2", "microservices")
 def create_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
-        **spec, namespace=kwargs["body"]["metadata"]["namespace"]
+        **spec,
+        namespace=kwargs["body"]["metadata"]["namespace"],
+        name=kwargs["body"]["metadata"]["name"]
     )
-    deployment = kubernetes_controller.create_deployment(
-        deploy_config, name=kwargs["body"]["metadata"]["name"]
-    )
+    deployment = kubernetes_controller.create_deployment(deploy_config)
     service = kubernetes_controller.create_service(
         ServiceConfig(**deploy_config.model_dump())
     )
-    virtual_service = VirtualServiceResource(
-        VirtualServiceConfig(**spec, namespace=kwargs["body"]["metadata"]["namespace"])
+    virtual_service = kubernetes_controller.create_virtual_service(
+        VirtualServiceConfig(**deploy_config.model_dump())
     )
-    kubernetes_controller.create_virtual_service(virtual_service)
     kopf.adopt(deployment)
     kopf.adopt(service)
     kopf.adopt(virtual_service)
@@ -133,30 +64,30 @@ def create_fn_v1alpha2(spec, **kwargs):
     ]["name"] = kwargs["body"]["metadata"]["name"]
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
-    virtual_service.create()
+    VirtualServiceResource(api, virtual_service).create()
     api.session.close()
     return {
         "children": [
             deployment["metadata"],
             service["metadata"],
-            virtual_service.obj["metadata"],
+            virtual_service["metadata"],
         ],
     }
 
 
-kopf.on.update("imran.dev.io", "v1alpha2", "microservices")
-
-
+@kopf.on.update("imran.dev.io", "v1alpha2", "microservices")
 def update_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
-        **spec, namespace=kwargs["body"]["metadata"]["namespace"]
+        **spec,
+        namespace=kwargs["body"]["metadata"]["namespace"],
+        name=kwargs["body"]["metadata"]["name"]
     )
     deployment = kubernetes_controller.update_deployment(deploy_config)
     service = kubernetes_controller.update_service(
         ServiceConfig(**deploy_config.model_dump())
     )
     virtual_service = kubernetes_controller.update_virtual_service(
-        VirtualServiceConfig(**spec, namespace=kwargs["body"]["metadata"]["namespace"])
+        VirtualServiceConfig(**deploy_config.model_dump())
     )
     children = [
         deployment.obj["metadata"],
