@@ -20,7 +20,7 @@ class KubernetesController:
         return self.api
 
     def create_deployment(self, deploy_config: DeployConfig):
-        deployment = {
+        return {
             "apiVersion": "apps/v1",
             "kind": "Deployment",
             "metadata": {
@@ -60,10 +60,8 @@ class KubernetesController:
             },
         }
 
-        return deployment
-
     def create_service(self, service_config: ServiceConfig):
-        service = {
+        return {
             "apiVersion": "v1",
             "kind": "Service",
             "metadata": {
@@ -81,11 +79,11 @@ class KubernetesController:
                 "type": service_config.type,
             },
         }
-        return service
+
 
     def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
 
-        virtual_service = {
+        return {
             "apiVersion": "networking.istio.io/v1alpha3",
             "kind": "VirtualService",
             "metadata": {
@@ -121,7 +119,7 @@ class KubernetesController:
                 ],
             },
         }
-        return virtual_service
+
 
     def update_deployment(self, deploy_config: DeployConfig):
         deployment = self.get_deployment_by_name(
@@ -226,3 +224,22 @@ class KubernetesController:
         gateway = GatewayResource(self.api, gateway_config)
         gateway.create()
         return gateway
+
+    def create_horizontal_pod_autoscaler_for_(self, hpa_config: dict):
+        return {
+            "apiVersion": "autoscaling/v2beta2",
+            "kind": "HorizontalPodAutoscaler",
+            "metadata": {
+                "labels": hpa_config["labels"],
+            },
+            "spec": {
+                "scaleTargetRef": {
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "name": hpa_config["name"],
+                },
+                "minReplicas": hpa_config["min_replicas"],
+                "maxReplicas": hpa_config["max_replicas"],
+                "metrics": hpa_config["metrics"],
+            },
+        }
