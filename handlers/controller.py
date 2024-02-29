@@ -225,21 +225,3 @@ class KubernetesController:
         gateway.create()
         return gateway
 
-    def create_horizontal_pod_autoscaler_for_(self, hpa_config: dict):
-        return {
-            "apiVersion": "autoscaling/v2beta2",
-            "kind": "HorizontalPodAutoscaler",
-            "metadata": {
-                "labels": hpa_config["labels"],
-            },
-            "spec": {
-                "scaleTargetRef": {
-                    "apiVersion": "apps/v1",
-                    "kind": "Deployment",
-                    "name": hpa_config["name"],
-                },
-                "minReplicas": hpa_config["min_replicas"],
-                "maxReplicas": hpa_config["max_replicas"],
-                "metrics": hpa_config["metrics"],
-            },
-        }

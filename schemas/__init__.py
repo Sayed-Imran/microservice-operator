@@ -53,15 +53,3 @@ class VirtualServiceConfig(BaseModel):
     path: str = "/"
     timeout: str = "5s"
     port: int = 80
-
-class HorizontalPodAutoscalerConfig(BaseModel):
-    """HorizontalPodAutoscaler configuration."""
-
-    name: str
-    namespace: str = "default"
-    min_replicas: int = 1
-    max_replicas: int = 10
-    cpu_target: int = 80
-    memory_target: int = 80
-    labels: dict[str, str] = {}
-    annotations: dict[str, str] = {}
