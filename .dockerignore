@@ -1,6 +1,7 @@
 .env
 .ruff_cache/
 *.yml
+*.yaml
 __pycache__/
 MAKEFILE
 .gitignore
