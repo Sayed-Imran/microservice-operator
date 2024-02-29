@@ -9,3 +9,4 @@ MAKEFILE
 manifests/
 Dockerfile
 *.md
+.git/
