@@ -9,7 +9,7 @@ rules:
     verbs: [list, watch, patch, get]
 
   - apiGroups: [imran.dev.io, apps, "", networking.istio.io]
-    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices, gateway]
+    resources: [microservice, microservices, deployments, pods, services, services/proxy, events, virtualservices, gateways]
     verbs: [list, watch, patch, get, create, delete]
 
   - apiGroups: [batch, extensions]
