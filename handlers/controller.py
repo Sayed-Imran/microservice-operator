@@ -80,7 +80,6 @@ class KubernetesController:
             },
         }
 
-
     def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
 
         return {
@@ -119,7 +118,6 @@ class KubernetesController:
                 ],
             },
         }
-
 
     def update_deployment(self, deploy_config: DeployConfig):
         deployment = self.get_deployment_by_name(
@@ -224,4 +222,3 @@ class KubernetesController:
         gateway = GatewayResource(self.api, gateway_config)
         gateway.create()
         return gateway
-
