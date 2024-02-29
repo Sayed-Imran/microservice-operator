@@ -6,3 +6,6 @@ __pycache__/
 MAKEFILE
 .gitignore
 .vscode/
+manifests/
+Dockerfile
+*.md
