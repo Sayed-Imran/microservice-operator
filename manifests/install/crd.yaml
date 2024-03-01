@@ -43,7 +43,6 @@ spec:
                 maximum: 65535
               path:
                 type: string
-                default: /
               labels:
                 type: object
                 additionalProperties:
@@ -95,7 +94,6 @@ spec:
             - replicas
             - image
             - port
-            - path
           status:
             type: object
             properties:

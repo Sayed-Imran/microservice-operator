@@ -53,25 +53,23 @@ def create_fn_v1alpha2(spec, **kwargs):
     service = kubernetes_controller.create_service(
         ServiceConfig(**deploy_config.model_dump())
     )
-    virtual_service = kubernetes_controller.create_virtual_service(
-        VirtualServiceConfig(**deploy_config.model_dump())
-    )
     kopf.adopt(deployment)
     kopf.adopt(service)
-    kopf.adopt(virtual_service)
-    deployment["metadata"]["name"] = service["metadata"]["name"] = virtual_service[
-        "metadata"
-    ]["name"] = kwargs["body"]["metadata"]["name"]
+    deployment["metadata"]["name"] = service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
-    VirtualServiceResource(api, virtual_service).create()
+    children = [deployment["metadata"], service["metadata"]]
+    if spec.get("path"):
+        virtual_service = kubernetes_controller.create_virtual_service(
+            VirtualServiceConfig(**deploy_config.model_dump())
+        )    
+        kopf.adopt(virtual_service)
+        virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
+        VirtualServiceResource(api, virtual_service).create()
+        children.append(virtual_service["metadata"])
     api.session.close()
     return {
-        "children": [
-            deployment["metadata"],
-            service["metadata"],
-            virtual_service["metadata"],
-        ],
+        "children": children,
     }
 
 
@@ -86,14 +84,15 @@ def update_fn_v1alpha2(spec, **kwargs):
     service = kubernetes_controller.update_service(
         ServiceConfig(**deploy_config.model_dump())
     )
-    virtual_service = kubernetes_controller.update_virtual_service(
-        VirtualServiceConfig(**deploy_config.model_dump())
-    )
     children = [
         deployment.obj["metadata"],
         service.obj["metadata"],
-        virtual_service.obj["metadata"],
     ]
+    if spec.get("path"):
+        virtual_service = kubernetes_controller.update_virtual_service(
+            VirtualServiceConfig(**deploy_config.model_dump())
+        )
+        children.append(virtual_service.obj["metadata"])
     api.session.close()
     return {
         "children": children,
