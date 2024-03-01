@@ -37,10 +37,12 @@ class KubernetesController:
                         "annotations": deploy_config.annotations,
                     },
                     "spec": {
+                        "imagePullSecrets": deploy_config.image_pull_secrets,
                         "containers": [
                             {
                                 "name": deploy_config.name,
                                 "image": deploy_config.image,
+                                "imagePullPolicy": deploy_config.image_pull_policy,
                                 "ports": [{"containerPort": deploy_config.port}],
                                 "env": deploy_config.env,
                                 "resources": {
