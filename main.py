@@ -95,20 +95,19 @@ def update_fn_v1alpha2(spec, **kwargs):
         virtual_service, is_update = kubernetes_controller.update_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
         )
-        if not is_update:
+        if is_update:
+            children.append(virtual_service.obj["metadata"])
+        else:
             kopf.adopt(virtual_service)
             virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
             VirtualServiceResource(api, virtual_service).create()
             children.append(virtual_service["metadata"])
-        else:
-            children.append(virtual_service.obj["metadata"])
-    else:
-        if virtual_service := kubernetes_controller.get_virtual_service_by_name(
+    elif virtual_service := kubernetes_controller.get_virtual_service_by_name(
             kwargs["body"]["metadata"]["name"],
             namespace=kwargs["body"]["metadata"]["namespace"],
         ):
-            virtual_service.delete()
-            children.append(virtual_service.obj["metadata"])
+        virtual_service.delete()
+        children.append(virtual_service.obj["metadata"])
     api.session.close()
     return {
         "children": children,
