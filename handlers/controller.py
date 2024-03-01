@@ -153,23 +153,25 @@ class KubernetesController:
         return service
 
     def update_virtual_service(self, virtual_service_config: VirtualServiceConfig):
-        if virtual_service := self.get_virtual_service_by_name(
-            virtual_service_config.name, namespace=virtual_service_config.namespace
+        if not (
+            virtual_service := self.get_virtual_service_by_name(
+                virtual_service_config.name,
+                namespace=virtual_service_config.namespace,
+            )
         ):
-            virtual_service.obj["spec"]["gateways"] = [virtual_service_config.gateway]
-            virtual_service.obj["spec"]["http"][0]["match"][0]["uri"][
-                "prefix"
-            ] = virtual_service_config.path
-            virtual_service.obj["spec"]["http"][0]["route"][0]["destination"]["port"][
-                "number"
-            ] = virtual_service_config.port
-            virtual_service.obj["spec"]["http"][0][
-                "timeout"
-            ] = virtual_service_config.timeout
-            virtual_service.update()
-            return virtual_service, True
-        else:
             return self.create_virtual_service(virtual_service_config), False
+        virtual_service.obj["spec"]["gateways"] = [virtual_service_config.gateway]
+        virtual_service.obj["spec"]["http"][0]["match"][0]["uri"][
+            "prefix"
+        ] = virtual_service_config.path
+        virtual_service.obj["spec"]["http"][0]["route"][0]["destination"]["port"][
+            "number"
+        ] = virtual_service_config.port
+        virtual_service.obj["spec"]["http"][0][
+            "timeout"
+        ] = virtual_service_config.timeout
+        virtual_service.update()
+        return virtual_service, True
 
     def get_deployment_by_labels(self, labels: dict, namespace):
         deployments = pykube.Deployment.objects(self.api).filter(
