@@ -2,27 +2,33 @@
 
 This operator is a Kubernetes operator that manages microservices. It is built using the [kopf](https://github.com/nolar/kopf) framework, which is a Python framework for Kubernetes operators.
 
-Any microservice API which is developed, needs to be deployed and exposed as a Kubernetes service. This operator automates the process of deploying as Kubernetes Deployment and exposing the same as a Kubernetes service.
+Any microservice API which is developed, needs to be deployed and exposed as a Kubernetes service and all sits behind a proxy. This operator automates the process of deploying as Kubernetes Deployment and exposing the same as a Kubernetes service and also putting the same behind a proxy using Istio's VirtualService and Gateway.
 
 ## Contents
 
-1. [Installation](#installation)
+0. [Prerequisites](#prerequisites)
+1. [Operator Installation](#installation)
 2. [Usage](#usage)
 3. [Development](#development)
 
 
-## Installation
+## Prerequisites
 
-For the operator to be installed, the crd needs to be installed first. The crd can be installed using the following command:
+As the operator uses Istio's VirtualService and Gateway, the Istio service mesh needs to be installed in the Kubernetes cluster. Refer to the [Istio documentation](https://istio.io/latest/docs/setup/getting-started/#download) for installation instructions.
+
+## Operator Installation
+
+Clone the repository and change directory to the repository:
 
 ```bash
- kubectl apply -f https://raw.githubusercontent.com/Sayed-Imran/microservice-operator/main/crd.yml
+git clone https://github.com/Sayed-Imran/microservice-operator.git
+cd microservice-operator
 ```
 
-To install the operator, the following command can be used:
+Single command to install the operator:
 
 ```bash
- kubectl apply -f https://raw.githubusercontent.com/Sayed-Imran/microservice-operator/main/deploy.yml
+kubectl apply -k manifests/install/
 ```
 
 ## Usage
@@ -41,6 +47,7 @@ spec:
   replicas: 3
   image: sayedimran/fastapi-sample-app:v4
   port: 7000
+  path: /api/v1
   env:
     - name: ENV
       value: dev
@@ -55,7 +62,7 @@ spec:
       memory: 128Mi
 ```
 
-The above custom resource will create a deployment with 3 replicas and expose the same as a service. The deployment will use the image `sayedimran/fastapi-sample-app:v4` and will expose the service on port `7000`. The environment variables `ENV` and `LOG_LEVEL` will be set to `dev` and `debug` respectively. The resources for the deployment will be limited to 100m CPU and 128Mi memory and the requests will be the same.
+The above custom resource will create a deployment with 3 replicas and expose the same as a service. The deployment will use the image `sayedimran/fastapi-sample-app:v4`, will create a Kubernetes Service to expose the deployment over port 7000, and will put microservice behind proxy `/api/v1/`. The environment variables `ENV` and `LOG_LEVEL` will be set to `dev` and `debug` respectively. The resources for the deployment will be limited to 100m CPU and 128Mi memory and the requests will be the same.
 
 ## Development
 
