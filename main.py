@@ -102,12 +102,14 @@ def update_fn_v1alpha2(spec, **kwargs):
             virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
             VirtualServiceResource(api, virtual_service).create()
             children.append(virtual_service["metadata"])
-    elif virtual_service := kubernetes_controller.get_virtual_service_by_name(
-        kwargs["body"]["metadata"]["name"],
-        namespace=kwargs["body"]["metadata"]["namespace"],
-    ):
-        virtual_service.delete()
-        children.append(virtual_service.obj["metadata"])
+
+    elif dict(spec).get("path") is None:
+        if virtual_service := kubernetes_controller.get_virtual_service_by_name(
+            kwargs["body"]["metadata"]["name"],
+            namespace=kwargs["body"]["metadata"]["namespace"],
+        ):
+            virtual_service.delete()
+
     api.session.close()
     return {
         "children": children,
