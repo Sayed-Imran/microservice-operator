@@ -47,7 +47,7 @@ def create_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
         **spec,
         namespace=kwargs["body"]["metadata"]["namespace"],
-        name=kwargs["body"]["metadata"]["name"]
+        name=kwargs["body"]["metadata"]["name"],
     )
     deployment = kubernetes_controller.create_deployment(deploy_config)
     service = kubernetes_controller.create_service(
@@ -55,14 +55,16 @@ def create_fn_v1alpha2(spec, **kwargs):
     )
     kopf.adopt(deployment)
     kopf.adopt(service)
-    deployment["metadata"]["name"] = service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
+    deployment["metadata"]["name"] = service["metadata"]["name"] = kwargs["body"][
+        "metadata"
+    ]["name"]
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
     children = [deployment["metadata"], service["metadata"]]
     if spec.get("path"):
         virtual_service = kubernetes_controller.create_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
-        )    
+        )
         kopf.adopt(virtual_service)
         virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
         VirtualServiceResource(api, virtual_service).create()
@@ -78,7 +80,7 @@ def update_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
         **spec,
         namespace=kwargs["body"]["metadata"]["namespace"],
-        name=kwargs["body"]["metadata"]["name"]
+        name=kwargs["body"]["metadata"]["name"],
     )
     deployment = kubernetes_controller.update_deployment(deploy_config)
     service = kubernetes_controller.update_service(
@@ -88,11 +90,18 @@ def update_fn_v1alpha2(spec, **kwargs):
         deployment.obj["metadata"],
         service.obj["metadata"],
     ]
-    if spec.get("path"):
-        virtual_service = kubernetes_controller.update_virtual_service(
+
+    if dict(spec).get("path"):
+        virtual_service, is_update = kubernetes_controller.update_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
         )
-        children.append(virtual_service.obj["metadata"])
+        if not is_update:
+            kopf.adopt(virtual_service)
+            virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
+            VirtualServiceResource(api, virtual_service).create()
+            children.append(virtual_service["metadata"])
+        else:
+            children.append(virtual_service.obj["metadata"])
     api.session.close()
     return {
         "children": children,
