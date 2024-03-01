@@ -103,9 +103,9 @@ def update_fn_v1alpha2(spec, **kwargs):
             VirtualServiceResource(api, virtual_service).create()
             children.append(virtual_service["metadata"])
     elif virtual_service := kubernetes_controller.get_virtual_service_by_name(
-            kwargs["body"]["metadata"]["name"],
-            namespace=kwargs["body"]["metadata"]["namespace"],
-        ):
+        kwargs["body"]["metadata"]["name"],
+        namespace=kwargs["body"]["metadata"]["namespace"],
+    ):
         virtual_service.delete()
         children.append(virtual_service.obj["metadata"])
     api.session.close()
