@@ -42,7 +42,7 @@ class ServiceConfig(BaseModel):
 
     name: str
     namespace: str = "default"
-    port: int = 80
+    ports: list[dict[str, Any]] = [{"port": 80, "targetPort": 80}]
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
@@ -56,6 +56,5 @@ class VirtualServiceConfig(BaseModel):
     host: str = ""
     gateway: str = "istio-system/microservice-gateway"
     namespace: str = "default"
-    path: str = "/"
+    containers_configs: list[ContainerConfig]
     timeout: str = "5s"
-    port: int = 80

@@ -52,13 +52,7 @@ class KubernetesController:
                 "labels": service_config.labels,
             },
             "spec": {
-                "ports": [
-                    {
-                        "name": "port",
-                        "port": service_config.port,
-                        "targetPort": service_config.port,
-                    }
-                ],
+                "ports": service_config.ports,
                 "selector": service_config.labels,
                 "type": service_config.type,
             },
@@ -108,7 +102,9 @@ class KubernetesController:
             deploy_config.name, deploy_config.namespace
         )
         deployment.obj["spec"]["replicas"] = deploy_config.replicas
-        deployment.obj["spec"]["template"]["spec"]["containers"] = deploy_config.containers
+        deployment.obj["spec"]["template"]["spec"][
+            "containers"
+        ] = deploy_config.containers
         deployment.obj["spec"]["template"]["spec"][
             "imagePullSecrets"
         ] = deploy_config.imagePullSecrets
