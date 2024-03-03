@@ -16,7 +16,7 @@ class DeployConfig(BaseModel):
 
     name: str
     image: str
-    imagePullPolicy: str = "Always"
+    imagePullPolicy: str = "ifNotPresent"
     imagePullSecrets: list[str] = []
     namespace: str = "default"
     replicas: int = 1
@@ -27,7 +27,6 @@ class DeployConfig(BaseModel):
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
     resources: Resource | dict = Resource().model_dump()
-    node_selector: dict[str, str] = {}
     affinity: dict[str, str] = {}
     tolerations: dict[str, str] = {}
     service_account: str | None = None
