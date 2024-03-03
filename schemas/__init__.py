@@ -11,25 +11,30 @@ class Resource(BaseModel):
     memory_request: str = "128Mi"
 
 
-class DeployConfig(BaseModel):
-    """Deploy configuration."""
+class ContainerConfig(BaseModel):
+    """Container configuration."""
 
     name: str
     image: str
     imagePullPolicy: str = "ifNotPresent"
+    ports: list[dict[str, Any]] = [{"containerPort": 80}]
+    env: list[dict[str, Any]] = []
+    resources: Resource | dict = Resource().model_dump()
+
+
+class DeployConfig(BaseModel):
+    """Deploy configuration."""
+
+    name: str
     imagePullSecrets: list[str] = []
     namespace: str = "default"
     replicas: int = 1
-    labels: dict[str, Any]
-    port: int = 80
-    path: str = "/"
-    env: list[dict[str, Any]] = []
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
-    resources: Resource | dict = Resource().model_dump()
     affinity: dict[str, str] = {}
     tolerations: dict[str, str] = {}
-    service_account: str | None = None
+    serviceAccount: str | None = None
+    containers: list[ContainerConfig] = []
 
 
 class ServiceConfig(BaseModel):
