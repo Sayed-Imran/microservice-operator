@@ -38,25 +38,7 @@ class KubernetesController:
                     },
                     "spec": {
                         "imagePullSecrets": deploy_config.imagePullSecrets,
-                        "containers": [
-                            {
-                                "name": deploy_config.name,
-                                "image": deploy_config.image,
-                                "imagePullPolicy": deploy_config.imagePullPolicy,
-                                "ports": [{"containerPort": deploy_config.port}],
-                                "env": deploy_config.env,
-                                "resources": {
-                                    "limits": {
-                                        "cpu": deploy_config.resources.cpu_limit,
-                                        "memory": deploy_config.resources.memory_limit,
-                                    },
-                                    "requests": {
-                                        "cpu": deploy_config.resources.cpu_request,
-                                        "memory": deploy_config.resources.memory_request,
-                                    },
-                                },
-                            }
-                        ],
+                        "containers": deploy_config.containers,
                     },
                 },
             },
@@ -126,25 +108,7 @@ class KubernetesController:
             deploy_config.name, deploy_config.namespace
         )
         deployment.obj["spec"]["replicas"] = deploy_config.replicas
-        deployment.obj["spec"]["template"]["spec"]["containers"][0][
-            "image"
-        ] = deploy_config.image
-        deployment.obj["spec"]["template"]["spec"]["containers"][0][
-            "env"
-        ] = deploy_config.env
-        deployment.obj["spec"]["template"]["spec"]["containers"][0]["resources"] = {
-            "limits": {
-                "cpu": deploy_config.resources.cpu_limit,
-                "memory": deploy_config.resources.memory_limit,
-            },
-            "requests": {
-                "cpu": deploy_config.resources.cpu_request,
-                "memory": deploy_config.resources.memory_request,
-            },
-        }
-        deployment.obj["spec"]["template"]["spec"]["containers"][0][
-            "imagePullPolicy"
-        ] = deploy_config.imagePullPolicy
+        deployment.obj["spec"]["template"]["spec"]["containers"] = deploy_config.containers
         deployment.obj["spec"]["template"]["spec"][
             "imagePullSecrets"
         ] = deploy_config.imagePullSecrets
