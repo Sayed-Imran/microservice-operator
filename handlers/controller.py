@@ -60,7 +60,7 @@ class KubernetesController:
 
     def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
 
-        return {
+        virtual_service = {
             "apiVersion": "networking.istio.io/v1alpha3",
             "kind": "VirtualService",
             "metadata": {
@@ -69,7 +69,11 @@ class KubernetesController:
             "spec": {
                 "hosts": ["*"],
                 "gateways": [virtual_service_config.gateway],
-                "http": [
+            },
+        }
+        for container in virtual_service_config.containers_configs:
+            if container.path:
+                virtual_service["spec"]["http"] = [
                     {
                         "match": [
                             {
@@ -78,24 +82,17 @@ class KubernetesController:
                                 }
                             }
                         ],
-                        "rewrite": {
-                            "uri": "/",
-                        },
                         "route": [
                             {
                                 "destination": {
-                                    "host": f"{virtual_service_config.name}.{virtual_service_config.namespace}.svc.cluster.local",
-                                    "port": {
-                                        "number": virtual_service_config.port,
-                                    },
-                                },
-                                "timeout": virtual_service_config.timeout,
+                                    "host": container.name,
+                                    "port": {"number": container.port["containerPort"]},
+                                }
                             }
                         ],
+                        "timeout": virtual_service_config.timeout,
                     }
-                ],
-            },
-        }
+                ]
 
     def update_deployment(self, deploy_config: DeployConfig):
         deployment = self.get_deployment_by_name(

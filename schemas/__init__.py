@@ -18,6 +18,7 @@ class ContainerConfig(BaseModel):
     image: str
     imagePullPolicy: str = "ifNotPresent"
     ports: list[dict[str, Any]] = [{"containerPort": 80}]
+    path: str | None = None
     env: list[dict[str, Any]] = []
     resources: Resource | dict = Resource().model_dump()
 
