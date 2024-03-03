@@ -42,7 +42,7 @@ def prepare_fn(**_):
     preflight.run()
 
 
-@kopf.on.create("imran.dev.io", "v1alpha2", "microservices")
+@kopf.on.create("imran.dev.io", "v1beta1", "microservices")
 def create_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
         **spec,
@@ -75,7 +75,7 @@ def create_fn_v1alpha2(spec, **kwargs):
     }
 
 
-@kopf.on.update("imran.dev.io", "v1alpha2", "microservices")
+@kopf.on.update("imran.dev.io", "v1beta1", "microservices")
 def update_fn_v1alpha2(spec, **kwargs):
     deploy_config = DeployConfig(
         **spec,
