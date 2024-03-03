@@ -12,7 +12,7 @@ spec:
     shortNames:
     - ms
   versions:
-  - name: v1alpha2
+  - name: v1beta1
     served: true
     storage: true
     schema:
@@ -25,71 +25,74 @@ spec:
               replicas:
                 type: integer
                 minimum: 1
-              image:
-                type: string
-              imagePullPolicy:
-                type: string
-                enum:
-                - Always
-                - IfNotPresent
-                - Never
-              imagePullSecrets:
-                type: array
-                items:
-                  type: string
-              port:
-                type: integer
-                minimum: 1
-                maximum: 65535
-              path:
-                type: string
-              labels:
-                type: object
-                additionalProperties:
-                  type: string
-              env:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
+              container:
+                type: list
+                properties:
+                  image:
+                    type: string
+                  imagePullPolicy:
+                    type: string
+                    enum:
+                    - Always
+                    - IfNotPresent
+                    - Never
+                  imagePullSecrets:
+                    type: array
+                    items:
                       type: string
-                    value:
+                  port:
+                    type: integer
+                    minimum: 1
+                    maximum: 65535
+                  path:
+                    type: string
+                  labels:
+                    type: object
+                    additionalProperties:
                       type: string
-                    valueFrom:
+                  env:
+                    type: array
+                    items:
                       type: object
                       properties:
-                        secretKeyRef:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                        valueFrom:
                           type: object
                           properties:
-                            name:
-                              type: string
-                            key:
-                              type: string
-                        configMapKeyRef:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                            key:
-                              type: string
-              resources:
-                type: object
-                properties:
-                  limits:
+                            secretKeyRef:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                key:
+                                  type: string
+                            configMapKeyRef:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                key:
+                                  type: string
+                  resources:
                     type: object
                     properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                  requests:
-                    type: object
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
+                      limits:
+                        type: object
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                      requests:
+                        type: object
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
             required:
             - replicas
             - image
