@@ -37,12 +37,12 @@ class KubernetesController:
                         "annotations": deploy_config.annotations,
                     },
                     "spec": {
-                        "imagePullSecrets": deploy_config.image_pull_secrets,
+                        "imagePullSecrets": deploy_config.imagePullSecrets,
                         "containers": [
                             {
                                 "name": deploy_config.name,
                                 "image": deploy_config.image,
-                                "imagePullPolicy": deploy_config.image_pull_policy,
+                                "imagePullPolicy": deploy_config.imagePullPolicy,
                                 "ports": [{"containerPort": deploy_config.port}],
                                 "env": deploy_config.env,
                                 "resources": {
@@ -142,6 +142,12 @@ class KubernetesController:
                 "memory": deploy_config.resources.memory_request,
             },
         }
+        deployment.obj["spec"]["template"]["spec"]["containers"][0][
+            "imagePullPolicy"
+        ] = deploy_config.imagePullPolicy
+        deployment.obj["spec"]["template"]["spec"][
+            "imagePullSecrets"
+        ] = deploy_config.imagePullSecrets
         deployment.update()
         return deployment
 

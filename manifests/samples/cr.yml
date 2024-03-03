@@ -8,6 +8,7 @@ spec:
     env: dev
   replicas: 3
   image: sayedimran/fastapi-sample-app:v4
+  imagePullPolicy: IfNotPresent
   port: 7000
   path: /api/v1/
   env:

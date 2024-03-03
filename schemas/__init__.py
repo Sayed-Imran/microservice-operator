@@ -16,8 +16,8 @@ class DeployConfig(BaseModel):
 
     name: str
     image: str
-    image_pull_policy: str = "Always"
-    image_pull_secrets: list[str] = []
+    imagePullPolicy: str = "Always"
+    imagePullSecrets: list[str] = []
     namespace: str = "default"
     replicas: int = 1
     labels: dict[str, Any]
