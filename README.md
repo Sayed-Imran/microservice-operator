@@ -47,7 +47,7 @@ spec:
   replicas: 3
   image: sayedimran/fastapi-sample-app:v4
   port: 7000
-  path: /api/v1
+  path: /api/v1/
   env:
     - name: ENV
       value: dev
