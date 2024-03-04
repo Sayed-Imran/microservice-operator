@@ -25,6 +25,127 @@ spec:
               replicas:
                 type: integer
                 minimum: 1
+              affinity:
+                type: object
+                properties:
+                  nodeAffinity:
+                    type: object
+                    properties:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        type: object
+                        properties:
+                          nodeSelectorTerms:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                matchExpressions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      operator:
+                                        type: string
+                                        enum:
+                                        - In
+                                        - NotIn
+                                        - Exists
+                                        - DoesNotExist
+                                      values:
+                                        type: array
+                                        items:
+                                          type: string
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            preference:
+                              type: object
+                              properties:
+                                matchExpressions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      operator:
+                                        type: string
+                                        enum:
+                                        - In
+                                        - NotIn
+                                        - Exists
+                                        - DoesNotExist
+                                      values:
+                                        type: array
+                                        items:
+                                          type: string
+                            weight:
+                              type: integer
+                              minimum: 1
+                              maximum: 100
+                  nodeAntiAffinity:
+                    type: object
+                    properties:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        type: object
+                        properties:
+                          nodeSelectorTerms:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                matchExpressions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      operator:
+                                        type: string
+                                        enum:
+                                        - In
+                                        - NotIn
+                                        - Exists
+                                        - DoesNotExist
+                                      values:
+                                        type: array
+                                        items:
+                                          type: string
+                      preferredDuringSchedulingIgnoredDuringExecution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            preference:
+                              type: object
+                              properties:
+                                matchExpressions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                      operator:
+                                        type: string
+                                        enum:
+                                        - In
+                                        - NotIn
+                                        - Exists
+                                        - DoesNotExist
+                                      values:
+                                        type: array
+                                        items:
+                                          type: string
+                            weight:
+                              type: integer
+                              minimum: 1
+                              maximum: 100
               container:
                 type: array
                 items:
