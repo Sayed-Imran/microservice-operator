@@ -10,6 +10,14 @@ class Resource(BaseModel):
     memory_limit: str = "128Mi"
     memory_request: str = "128Mi"
 
+class ProxyConfig(BaseModel):
+    """Proxy configuration."""
+
+    name: str
+    port: int
+    path: str
+    timeout: str = "5s"
+
 
 class ContainerConfig(BaseModel):
     """Container configuration."""
@@ -17,15 +25,13 @@ class ContainerConfig(BaseModel):
     name: str
     image: str
     imagePullPolicy: str = "ifNotPresent"
-    ports: list[dict[str, Any]] = [{"containerPort": 80}]
-    path: str | None = None
+    proxies: list[ProxyConfig]
     env: list[dict[str, Any]] = []
     resources: Resource | dict = Resource().model_dump()
     livenessProbe: dict[str, Any] | None = None
     readinessProbe: dict[str, Any] | None = None
     volumeMounts: list[dict[str, Any]] = []
     command: list[str] = []
-
 
 class DeployConfig(BaseModel):
     """Deploy configuration."""
@@ -64,3 +70,4 @@ class VirtualServiceConfig(BaseModel):
     namespace: str = "default"
     container: list[ContainerConfig]
     timeout: str = "5s"
+

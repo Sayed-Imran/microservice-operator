@@ -193,12 +193,19 @@ spec:
                       - Always
                       - IfNotPresent
                       - Never
-                    port:
-                      type: integer
-                      minimum: 1
-                      maximum: 65535
-                    path:
-                      type: string
+                    proxies:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          port:
+                            type: integer
+                            minimum: 1
+                            maximum: 65535
+                          path:
+                            type: string
                     labels:
                       type: object
                       additionalProperties:
