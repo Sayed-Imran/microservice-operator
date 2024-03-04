@@ -36,7 +36,7 @@ class DeployConfig(BaseModel):
     replicas: int = 1
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}
-    affinity: dict[str, str] = {}
+    affinity: dict[str, Any] = {}
     tolerations: dict[str, str] = {}
     serviceAccount: str | None = None
     containers: list[ContainerConfig]
@@ -62,5 +62,5 @@ class VirtualServiceConfig(BaseModel):
     host: str = ""
     gateway: str = "istio-system/microservice-gateway"
     namespace: str = "default"
-    containers_configs: list[ContainerConfig]
+    container: list[ContainerConfig]
     timeout: str = "5s"

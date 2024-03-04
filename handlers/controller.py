@@ -45,7 +45,7 @@ class KubernetesController:
         }
 
     def create_service(self, service_config: ServiceConfig):
-        return {
+        service_obj = {
             "apiVersion": "v1",
             "kind": "Service",
             "metadata": {
@@ -56,6 +56,17 @@ class KubernetesController:
                 "type": service_config.type,
             },
         }
+        for container in service_config.containers:
+            for port in container.ports:
+                service_obj["spec"]["ports"] = [
+                    {
+                        "name": f"{container.name}-port-{port['containerPort']}",
+                        "port": port["containerPort"],
+                        "targetPort": port["containerPort"],
+                    }
+                ]
+
+        return service_obj
 
     def create_virtual_service(self, virtual_service_config: VirtualServiceConfig):
 
