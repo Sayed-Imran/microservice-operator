@@ -52,7 +52,6 @@ class KubernetesController:
                 "labels": service_config.labels,
             },
             "spec": {
-                "ports": service_config.ports,
                 "selector": service_config.labels,
                 "type": service_config.type,
             },

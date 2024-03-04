@@ -21,6 +21,10 @@ class ContainerConfig(BaseModel):
     path: str | None = None
     env: list[dict[str, Any]] = []
     resources: Resource | dict = Resource().model_dump()
+    livenessProbe: dict[str, Any] | None = None
+    readinessProbe: dict[str, Any] | None = None
+    volumeMounts: list[dict[str, Any]] = []
+    command: list[str] = []
 
 
 class DeployConfig(BaseModel):
@@ -35,7 +39,8 @@ class DeployConfig(BaseModel):
     affinity: dict[str, str] = {}
     tolerations: dict[str, str] = {}
     serviceAccount: str | None = None
-    containers: list[ContainerConfig] = []
+    containers: list[ContainerConfig]
+    volumes: list[dict[str, Any]] = []
 
 
 class ServiceConfig(BaseModel):
@@ -43,7 +48,7 @@ class ServiceConfig(BaseModel):
 
     name: str
     namespace: str = "default"
-    ports: list[dict[str, Any]] = [{"port": 80, "targetPort": 80}]
+    containers: list[ContainerConfig]
     type: str = "ClusterIP"
     labels: dict[str, str] = {}
     annotations: dict[str, str] = {}

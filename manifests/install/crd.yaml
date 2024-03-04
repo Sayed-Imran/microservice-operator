@@ -365,7 +365,7 @@ spec:
                         failureThreshold:
                           type: integer
                           minimum: 0
-              
+
               imagePullSecrets:
                 type: array
                 items:
