@@ -25,6 +25,8 @@ spec:
               replicas:
                 type: integer
                 minimum: 1
+              serviceAccount:
+                type: string
               affinity:
                 type: object
                 properties:
@@ -365,7 +367,14 @@ spec:
                         failureThreshold:
                           type: integer
                           minimum: 0
-
+                    command:
+                      type: array
+                      items:
+                        type: string
+                    args:
+                      type: array
+                      items:
+                        type: string
               imagePullSecrets:
                 type: array
                 items:
