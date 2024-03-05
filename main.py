@@ -2,7 +2,7 @@ import kopf
 import pykube
 import preflight
 from custom_resources import VirtualServiceResource
-from handlers.controller import KubernetesController
+from handlers.kube_handler import KubernetesHandler
 from schemas import (
     DeployConfig,
     ServiceConfig,
@@ -10,8 +10,8 @@ from schemas import (
 )
 from config import EnvConfig
 
-kubernetes_controller = KubernetesController()
-api = kubernetes_controller.get_api()
+kubernetes_handler = KubernetesHandler()
+api = kubernetes_handler.get_api()
 
 
 @kopf.on.login()
@@ -49,8 +49,8 @@ def create_fn_v1alpha2(spec, **kwargs):
         namespace=kwargs["body"]["metadata"]["namespace"],
         name=kwargs["body"]["metadata"]["name"],
     )
-    deployment = kubernetes_controller.create_deployment(deploy_config)
-    service = kubernetes_controller.create_service(
+    deployment = kubernetes_handler.create_deployment(deploy_config)
+    service = kubernetes_handler.create_service(
         ServiceConfig(**deploy_config.model_dump())
     )
     kopf.adopt(deployment)
@@ -62,7 +62,7 @@ def create_fn_v1alpha2(spec, **kwargs):
     pykube.Service(api, service).create()
     children = [deployment["metadata"], service["metadata"]]
     if spec.get("path"):
-        virtual_service = kubernetes_controller.create_virtual_service(
+        virtual_service = kubernetes_handler.create_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
         )
         kopf.adopt(virtual_service)
@@ -82,8 +82,8 @@ def update_fn_v1alpha2(spec, **kwargs):
         namespace=kwargs["body"]["metadata"]["namespace"],
         name=kwargs["body"]["metadata"]["name"],
     )
-    deployment = kubernetes_controller.update_deployment(deploy_config)
-    service = kubernetes_controller.update_service(
+    deployment = kubernetes_handler.update_deployment(deploy_config)
+    service = kubernetes_handler.update_service(
         ServiceConfig(**deploy_config.model_dump())
     )
     children = [
@@ -92,7 +92,7 @@ def update_fn_v1alpha2(spec, **kwargs):
     ]
 
     if dict(spec).get("path"):
-        virtual_service, is_update = kubernetes_controller.update_virtual_service(
+        virtual_service, is_update = kubernetes_handler.update_virtual_service(
             VirtualServiceConfig(**deploy_config.model_dump())
         )
         if is_update:
@@ -104,7 +104,7 @@ def update_fn_v1alpha2(spec, **kwargs):
             children.append(virtual_service["metadata"])
 
     elif dict(spec).get("path") is None:
-        if virtual_service := kubernetes_controller.get_virtual_service_by_name(
+        if virtual_service := kubernetes_handler.get_virtual_service_by_name(
             kwargs["body"]["metadata"]["name"],
             namespace=kwargs["body"]["metadata"]["namespace"],
         ):

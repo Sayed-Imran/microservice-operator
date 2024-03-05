@@ -1,6 +1,6 @@
 import logging
 
-from handlers.controller import KubernetesController
+from handlers.kube_handler import KubernetesHandler
 
 
 gateway = {
@@ -30,11 +30,11 @@ gateway = {
 
 def run():
     try:
-        kubernetes_controller = KubernetesController()
-        if not kubernetes_controller.get_gateway_by_name(
+        kubernetes_handler = KubernetesHandler()
+        if not kubernetes_handler.get_gateway_by_name(
             "microservice-gateway", "istio-system"
         ):
-            kubernetes_controller.create_gateway(gateway)
+            kubernetes_handler.create_gateway(gateway)
             logging.info("Gateway created.")
         else:
             logging.info("Gateway already exists.")
