@@ -9,7 +9,7 @@ from schemas import (
 )
 
 
-class KubernetesController:
+class KubernetesHandler:
     def __init__(self) -> None:
         if EnvConfig.ENV in ["dev", "test"]:
             self.api = pykube.HTTPClient(pykube.KubeConfig.from_file("config.yml"))
@@ -81,8 +81,8 @@ class KubernetesController:
                 "gateways": [virtual_service_config.gateway],
             },
         }
-        for container in virtual_service_config.containers_configs:
-            if container.path:
+        for container in virtual_service_config.container:
+            for proxy in container.proxies:
                 virtual_service["spec"]["http"] = [
                     {
                         "match": [
@@ -92,17 +92,19 @@ class KubernetesController:
                                 }
                             }
                         ],
+
                         "route": [
                             {
                                 "destination": {
-                                    "host": container.name,
-                                    "port": {"number": container.port["containerPort"]},
+                                    "host": f"{virtual_service_config.name}.{virtual_service_config.namespace}.svc.cluster.local",
+                                    "port": {"number": proxy.port},
                                 }
                             }
                         ],
-                        "timeout": virtual_service_config.timeout,
                     }
                 ]
+                
+        return virtual_service
 
     def update_deployment(self, deploy_config: DeployConfig):
         deployment = self.get_deployment_by_name(
