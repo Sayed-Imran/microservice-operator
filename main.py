@@ -61,14 +61,14 @@ def create_fn_v1alpha2(spec, **kwargs):
     pykube.Deployment(api, deployment).create()
     pykube.Service(api, service).create()
     children = [deployment["metadata"], service["metadata"]]
-    if spec.get("path"):
-        virtual_service = kubernetes_handler.create_virtual_service(
-            VirtualServiceConfig(**deploy_config.model_dump())
-        )
-        kopf.adopt(virtual_service)
-        virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
-        VirtualServiceResource(api, virtual_service).create()
-        children.append(virtual_service["metadata"])
+    # if spec.get("path"):
+    #     virtual_service = kubernetes_handler.create_virtual_service(
+    #         VirtualServiceConfig(**deploy_config.model_dump())
+    #     )
+    #     kopf.adopt(virtual_service)
+    #     virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
+    #     VirtualServiceResource(api, virtual_service).create()
+    #     children.append(virtual_service["metadata"])
     api.session.close()
     return {
         "children": children,
@@ -91,24 +91,24 @@ def update_fn_v1alpha2(spec, **kwargs):
         service.obj["metadata"],
     ]
 
-    if dict(spec).get("path"):
-        virtual_service, is_update = kubernetes_handler.update_virtual_service(
-            VirtualServiceConfig(**deploy_config.model_dump())
-        )
-        if is_update:
-            children.append(virtual_service.obj["metadata"])
-        else:
-            kopf.adopt(virtual_service)
-            virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
-            VirtualServiceResource(api, virtual_service).create()
-            children.append(virtual_service["metadata"])
+    # if dict(spec).get("path"):
+    #     virtual_service, is_update = kubernetes_handler.update_virtual_service(
+    #         VirtualServiceConfig(**deploy_config.model_dump())
+    #     )
+    #     if is_update:
+    #         children.append(virtual_service.obj["metadata"])
+    #     else:
+    #         kopf.adopt(virtual_service)
+    #         virtual_service["metadata"]["name"] = kwargs["body"]["metadata"]["name"]
+    #         VirtualServiceResource(api, virtual_service).create()
+    #         children.append(virtual_service["metadata"])
 
-    elif dict(spec).get("path") is None:
-        if virtual_service := kubernetes_handler.get_virtual_service_by_name(
-            kwargs["body"]["metadata"]["name"],
-            namespace=kwargs["body"]["metadata"]["namespace"],
-        ):
-            virtual_service.delete()
+    # elif dict(spec).get("path") is None:
+    #     if virtual_service := kubernetes_handler.get_virtual_service_by_name(
+    #         kwargs["body"]["metadata"]["name"],
+    #         namespace=kwargs["body"]["metadata"]["namespace"],
+    #     ):
+    #         virtual_service.delete()
 
     api.session.close()
     return {
